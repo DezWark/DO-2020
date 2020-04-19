@@ -10,15 +10,16 @@ def stemp(screenresolution, fullscreen, verim, keym, beacon):
     # -*- coding: utf-8 -*-
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
-    PINK = (230, 50, 230)
+    PINK = (170, 85, 170) #(0xAA,0x55,0xAA)
     Upd = True
     os = platform.system()
-    if (sys.platform.startswith("win")):
+    if (sys.platform.startswith("linux")):
+        import os
+    else:
         import pywintypes
         from win32 import win32gui
         import win32con
-    else:
-        import os
+        import winsound
     pygame.init()                     
     if fullscreen:
         infos = pygame.display.Info()
@@ -30,7 +31,7 @@ def stemp(screenresolution, fullscreen, verim, keym, beacon):
         scr_h = screenresolution[1]
         screen = pygame.display.set_mode((scr_w, scr_h)) 
     background = pygame.Surface(screen.get_size()) 
-    background.fill(BLACK) 
+    background.fill(PINK) 
     background = background.convert() 
     screen.blit(background, (0,0)) 
     clock = pygame.time.Clock() 
@@ -42,6 +43,7 @@ def stemp(screenresolution, fullscreen, verim, keym, beacon):
         playtime += milliseconds / 1000.0
         color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
         if Upd:
+            pygame.draw.rect(screen, BLACK, (0,0,scr_w,scr_h))
             for n in range(scr_w//2):
                 pygame.draw.line(screen, WHITE, [n*2,0], [n*2,scr_h], 1)
             if verim:
@@ -57,9 +59,11 @@ def stemp(screenresolution, fullscreen, verim, keym, beacon):
                 time.sleep(beacon)
                 os.system('gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.freedesktop.DBus.Properties.Set org.gnome.SettingsDaemon.Power.Screen Brightness "<int32 100>"')
             else:
+                winsound.Beep(2000, 500)
                 win32gui.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SYSCOMMAND, win32con.SC_MONITORPOWER, 2)
                 time.sleep(beacon)
                 win32gui.SendMessage(win32con.HWND_BROADCAST,win32con.WM_SYSCOMMAND, win32con.SC_MONITORPOWER, -1)
+            Upd = True
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 mainloop = False
@@ -68,9 +72,9 @@ def stemp(screenresolution, fullscreen, verim, keym, beacon):
                     h = scr_h//16
                     for v in range(8):
                         if (event.key&(1<<v)):
-                            pygame.draw.rect(screen, BLACK, (0,(2*v+1)*h,scr_w,h))
+                            pygame.draw.rect(screen, PINK, (0,(2*v+1)*h,scr_w,h))
                         else:
-                            pygame.draw.rect(screen, BLACK, (0,(2*v)*h,scr_w,h))
+                            pygame.draw.rect(screen, PINK, (0,(2*v)*h,scr_w,h))
                 Upd = False
                 if event.key == pygame.K_ESCAPE:
                     mainloop = False
@@ -84,6 +88,7 @@ def stemp(screenresolution, fullscreen, verim, keym, beacon):
 
 if __name__ == '__main__':
     k = False
+    f = True
     b = 0
     v = 0
     if len(sys.argv) > 1:
@@ -93,7 +98,9 @@ if __name__ == '__main__':
                     v = int(sys.argv[pn+1])
             if (sys.argv[pn] == "-b"):
                 if (pn+1 < len(sys.argv)):
-                    b = int(sys.argv[pn+1])//2
+                    b = int(sys.argv[pn+1])
+            if (sys.argv[pn] == "-w"):
+                f = False
             if (sys.argv[pn] == "-k"):
                 k = True
-    stemp((1280,800),True,v,k,b)
+    stemp((720,360),f,v,k,b)
