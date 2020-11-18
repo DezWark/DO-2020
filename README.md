@@ -7,5 +7,5 @@ Welcome to _DO-2020_! This project contains test tasks for students of the Chely
 
 ## ToDo:
 1) Everything is just perfect. Run in various modes.
-2) Вraw an informative graph of the test signal
-3) Refactoring for research with monitor / cable
+2) Draw an informative graphs of the test signal in various modes.
+3) Modify code for research with monitor / cable
